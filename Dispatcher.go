@@ -6,6 +6,7 @@ type Dispatcher struct {
 }
 
 func NewDispatcher(max int) *Dispatcher {
+	JobQueue = make(chan Job)
 	pool := make(chan chan Job, max)
 	return &Dispatcher{WorkerPool: pool, MaxWorkers: max}
 }
