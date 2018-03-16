@@ -7,11 +7,12 @@ var (
 	MaxQueue  = 10
 )
 
-type Payload interface {
+type JobHandler interface {
+	Handle() error
 }
 
-type Job interface {
-	Do() error
+type Job struct {
+	Handler JobHandler
 }
 
 var JobQueue chan Job
@@ -36,7 +37,7 @@ func (w Worker) Start() {
 
 			select {
 			case job := <-w.JobChannel:
-				if err := job.Do(); err != nil {
+				if err := job.Handler.Handle(); err != nil {
 					log.Errorf("Error Job Do:%s", err.Error())
 				}
 			case <-w.quit:
