@@ -8,11 +8,10 @@ var (
 )
 
 type Payload interface {
-	Do() error
 }
 
-type Job struct {
-	Payload Payload
+type Job interface {
+	Do() error
 }
 
 var JobQueue chan Job
@@ -37,7 +36,7 @@ func (w Worker) Start() {
 
 			select {
 			case job := <-w.JobChannel:
-				if err := job.Payload.Do(); err != nil {
+				if err := job.Do(); err != nil {
 					log.Errorf("Error Job Do:%s", err.Error())
 				}
 			case <-w.quit:
@@ -46,7 +45,6 @@ func (w Worker) Start() {
 		}
 	}()
 }
-
 
 func (w Worker) Stop() {
 	go func() {
